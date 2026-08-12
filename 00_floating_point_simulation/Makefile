@@ -2,6 +2,10 @@ CXX = g++
 BIN_DIR = bin
 SRC_DIR = src
 
+setup:
+	mkdir -p bin
+	mkdir -p tests
+
 compile:
 	$(CXX) $(SRC_DIR)/band_pass_filter.cpp -o $(BIN_DIR)/band_pass_filter
 
