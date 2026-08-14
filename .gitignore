@@ -1,4 +1,7 @@
 00_floating_point_simulation/tests
 00_floating_point_simulation/bin
-01_floating_point_simulation/tests
-01_floating_point_simulation/bin
+
+01_fix_point_simulation/tests
+01_fix_point_simulation/bin
+
+tool/bin/
