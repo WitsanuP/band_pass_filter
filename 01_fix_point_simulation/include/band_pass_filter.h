@@ -40,16 +40,18 @@ std::vector<double> hpfWeights = { // 15
 #define SWEEP0 -1
 #endif
 
-/*
 std::vector<double> bit_trunc_lpf = { //17
-7,6,9,8,5,  8,7,8,4,8,  7,8,5,8,9, 6,7
+  //6,5,8,7,4, 7,6,7,3,7, 6,7,4,7,8, 5,6 // 38.4db
+    6,5,5,7,4, 7,6,7,3,7, 6,7,4,7,5, 5,6 //30.7073
 };
 
 std::vector<double> bit_trunc_hpf = { // 15
-7,9,9,7,8, 7,8,4,8,7,  8,7,9,9,7
+  //6,8,8,6,7, 6,7,3,7,6, 7,6,8,8,6     // 38.4db
+    6,7,5,6,7, 6,6,3,6,6, 7,6,5,7,6 //30.7073
 };
-*/
 
+//const int BIT_INPUT = 9;              // 38.4db
+const int BIT_INPUT = 8; //30.7073
 /*
 std::vector<double> bit_trunc_lpf = { //17
     -1, //1
@@ -86,6 +88,8 @@ std::vector<double> bit_trunc_hpf = { // 15
     -1, //12
     -1, //13
     -1, //14
-    SWEEP0 //15
+    -1 //15
 };
+
+const int BIT_INPUT = SWEEP0;
 */
