@@ -56,9 +56,9 @@ int main() {
         return 1;
     }
 
-    // 4. Cascade Filtering: Input Signal -> HPF Stage -> LPF Stage -> Final BPF Output
-    std::vector<double> hpfOutput = applyFIRFilter(inputSignal, hpfWeights);
-    std::vector<double> bpfOutput = applyFIRFilter(hpfOutput, lpfWeights);
+    // 4. Cascade Filtering: Input Signal -> LPF Stage -> HPF Stage -> Final BPF Output
+    std::vector<double> bpfOutput = applyFIRFilter(inputSignal, lpfWeights);
+    std::vector<double> hpfOutput = applyFIRFilter(bpfOutput, hpfWeights);
 
     // 5. Write the final Band-Pass filtered results to output.txt separated by spaces
     std::ofstream outputFile(outputFilename);
@@ -68,8 +68,8 @@ int main() {
     }
 
     outputFile << std::fixed << std::setprecision(20);
-    for (size_t i = 0; i < bpfOutput.size(); ++i) {
-        outputFile << bpfOutput[i] << (i == bpfOutput.size() - 1 ? "" : " ");
+    for (size_t i = 0; i < hpfOutput.size(); ++i) {
+        outputFile << hpfOutput[i] << (i == hpfOutput.size() - 1 ? "" : " ");
         outputFile << std::endl;
     }
     outputFile.close();
