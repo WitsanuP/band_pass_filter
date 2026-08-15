@@ -84,8 +84,10 @@ module tb_lpf_hpf_top;
     // ---------------- main stimulus ----------------
     initial begin
         // เปิดไฟล์ VCD สำหรับดู waveform
-        $dumpfile("tb_lpf_hpf_top.vcd");
-        $dumpvars(0, tb_lpf_hpf_top);
+        //$dumpfile("tb_lpf_hpf_top.vcd");
+        //$dumpvars(0, tb_lpf_hpf_top);
+        $fsdbDumpfile("wave.fsdb");
+        $fsdbDumpvars(0, tb_lpf_hpf_top);
 
         // เปิดไฟล์ CSV สำหรับเก็บผลลัพธ์
         fd = $fopen("lpf_hpf_output.csv", "w");

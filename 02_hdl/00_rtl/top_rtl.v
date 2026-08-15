@@ -4,6 +4,7 @@
 // coefficient ทั้งหมดถูกฝัง (localparam) อยู่ภายใน fir_lpf17.v / fir_hpf15.v แล้ว
 // จึงไม่ต้องส่ง coefficient เข้ามาจากภายนอกอีก
 // =====================================================================
+`timescale 1ns/1ps
 module lpf_hpf_top #(
     parameter integer DATA_W = 16
 )(
