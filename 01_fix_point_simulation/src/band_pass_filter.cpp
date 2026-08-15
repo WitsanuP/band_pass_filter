@@ -21,7 +21,7 @@ std::vector<double> applyFIRFilter(const std::vector<double>& input, const std::
                 sum += bit_trunc(weights[k], BIT_TRUNC[k]) * bit_trunc(input[n - k],BIT_INPUT);
             }
         }
-        output[n] = sum;
+        output[n] =  bit_trunc(sum, BIT_OUTPUT);
     }
     return output;
 }
@@ -57,7 +57,7 @@ int main() {
         return 1;
     }
 
-    // 4. Cascade Filtering: Input Signal -> HPF Stage -> LPF Stage -> Final BPF Output
+    // 4. Cascade Filtering: Input Signal -> LPF Stage -> HPF Stage -> Final BPF Output
     std::vector<double> bpfOutput = applyFIRFilter(inputSignal, lpfWeights, bit_trunc_lpf );
     std::vector<double> hpfOutput = applyFIRFilter(bpfOutput, hpfWeights, bit_trunc_hpf );
 
