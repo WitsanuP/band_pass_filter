@@ -56,6 +56,7 @@ std::vector<double> bit_trunc_hpf = { // 15
 //const int BIT_INPUT = 9;              // 38.4db
 const int BIT_INPUT = 8; //30.7073
 const int BIT_OUTPUT = 8; //30.7073
+const int BIT_ADDER = 13; //30.7073
 #endif
 
 #ifdef float_mode

@@ -18,7 +18,7 @@ std::vector<double> applyFIRFilter(const std::vector<double>& input, const std::
         for (size_t k = 0; k < numWeights; ++k) {
             // Check boundary to handle zero-padding for initial samples
             if (n >= k) {
-                sum += bit_trunc(weights[k], BIT_TRUNC[k]) * bit_trunc(input[n - k],BIT_INPUT);
+                sum += bit_trunc( bit_trunc(weights[k], BIT_TRUNC[k]) * bit_trunc(input[n - k],BIT_INPUT), BIT_ADDER);
             }
         }
         output[n] =  bit_trunc(sum, BIT_OUTPUT);
