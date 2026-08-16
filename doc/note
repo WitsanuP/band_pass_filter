@@ -1,3 +1,4 @@
+
 about 00_floating_point_simulation/
 
 
@@ -5,3 +6,9 @@ oder of all
 1 floating point simulation
 2 fix point simulation
 3
+
+
+info
+input <1,1,8>
+coef <1,0,?>
+output <1,1,8>
