@@ -18,11 +18,11 @@ module fir_lpf17 #(
 )(
     input  wire                       clk,
     input  wire                       rst_n,
-    input  wire                       in_valid,
+    //input  wire                       in_valid,
     input  wire signed [DATA_W-1:0]   data_in,
 
-    output reg                        out_valid,
-    output reg  signed [DATA_W-1:0]   data_out
+    //output reg                        out_valid,
+    output reg  signed [ACC_W-1:0]   data_out
 );
 
     // ---------------- coefficient แต่ละ tap: <sign, int, frac> ตัวอย่าง ----------------
@@ -88,7 +88,8 @@ module fir_lpf17 #(
         if (!rst_n) begin
             for (i = 0; i < 17; i = i + 1)
                 tap[i] <= {DATA_W{1'b0}};
-        end else if (in_valid) begin
+        end 
+        else begin
             tap[0] <= data_in;
             for (i = 1; i < 17; i = i + 1)
                 tap[i] <= tap[i-1];
@@ -109,7 +110,7 @@ module fir_lpf17 #(
     wire signed [DATA_W+8-1:0] mult_9 = tap[9] * COEF_9;
 
     wire signed [DATA_W+7-1:0] mult_10 = tap[10] * COEF_10;
-    wire signed [DATA_W+9-1:0] mult_11 = tap[11] * COEF_11;
+    wire signed [DATA_W+8-1:0] mult_11 = tap[11] * COEF_11;
     wire signed [DATA_W+5-1:0] mult_12 = tap[12] * COEF_12;
     wire signed [DATA_W+8-1:0] mult_13 = tap[13] * COEF_13;
     wire signed [DATA_W+6-1:0] mult_14 = tap[14] * COEF_14;
@@ -131,7 +132,7 @@ module fir_lpf17 #(
     wire signed [ACC_W-1:0] mult_aligned_9 = mult_9[DATA_W+8-1:2];
 
     wire signed [ACC_W-1:0] mult_aligned_10 = mult_10[DATA_W+7-1:1];
-    wire signed [ACC_W-1:0] mult_aligned_11 = mult_11[DATA_W+9-1:3];
+    wire signed [ACC_W-1:0] mult_aligned_11 = mult_11[DATA_W+8-1:2];
     wire signed [ACC_W-1:0] mult_aligned_12 = mult_12 << 1 ;
     wire signed [ACC_W-1:0] mult_aligned_13 = mult_13[DATA_W+8-1:2];
     wire signed [ACC_W-1:0] mult_aligned_14 = mult_14[DATA_W+6-1:0];
@@ -151,10 +152,8 @@ module fir_lpf17 #(
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             data_out  <= {DATA_W{1'b0}};
-            out_valid <= 1'b0;
         end else begin
-            data_out  <= acc[DATA_W+FRAC_MAX-1 -: DATA_W]; // *** ปรับ shift ตรงนี้ตาม Q-format จริง ***
-            out_valid <= in_valid;
+            data_out  <= acc; // *** ปรับ shift ตรงนี้ตาม Q-format จริง ***
         end
     end
 
