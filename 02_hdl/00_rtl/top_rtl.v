@@ -5,7 +5,7 @@
 // จึงไม่ต้องส่ง coefficient เข้ามาจากภายนอกอีก
 // =====================================================================
 `timescale 1ns/1ps
-module lpf_hpf_top #(
+module top_rtl #(
     parameter integer DATA_W = 10
 )(
     input  wire                     clk,
@@ -21,7 +21,7 @@ module lpf_hpf_top #(
     wire signed [9:0] input_hpf;
     assign input_hpf = {lpf_data_out[15],lpf_data_out[13:5]};
 
-    fir_lpf17 #(
+    lpf_rtl #(
         .DATA_W (DATA_W)
     ) u_lpf (
         .clk       (clk),
@@ -32,7 +32,7 @@ module lpf_hpf_top #(
         .data_out  (lpf_data_out)
     );
 
-    fir_hpf15 #(
+    hpf_rtl #(
         .DATA_W (DATA_W)
     ) u_hpf (
         .clk       (clk),

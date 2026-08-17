@@ -41,7 +41,7 @@ module top_rtb();
     //    .data_in(data_in),
     //    .data_out(data_out)
     //);
-    lpf_hpf_top uut(
+    top_rtl uut(
         .clk(clk),
         .rst_n(rst_n),
         .data_in(data_in),

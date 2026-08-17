@@ -11,7 +11,7 @@
 // สเกล(scale)ไม่เท่ากัน -> ต้อง shift ให้ frac ตรงกัน (เทียบกับ FRAC_MAX) ก่อนบวกรวม
 // การ shift นี้เป็นค่าคงที่ตอน compile ไม่เสีย hardware เพิ่ม (แค่การเดินสาย/ปะ 0)
 // ===================================================================
-module fir_hpf15 #(
+module hpf_rtl #(
     parameter integer DATA_W   = 10,
     parameter integer FRAC_MAX = 12,   // จำนวนบิตเศษส่วนมากสุดในบรรดา tap ทั้งหมด
     parameter integer ACC_W    = 16
