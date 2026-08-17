@@ -88,8 +88,7 @@ module fir_lpf17 #(
         if (!rst_n) begin
             for (i = 0; i < 17; i = i + 1)
                 tap[i] <= {DATA_W{1'b0}};
-        end 
-        else begin
+        end else begin
             tap[0] <= data_in;
             for (i = 1; i < 17; i = i + 1)
                 tap[i] <= tap[i-1];

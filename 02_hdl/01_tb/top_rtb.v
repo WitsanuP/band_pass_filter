@@ -1,137 +1,137 @@
-// =====================================================================
-// tb_lpf_hpf_top.v
-// Testbench สำหรับ lpf_hpf_top (LPF 17 taps -> HPF 15 taps)
-//
-// ทดสอบ 2 แบบ:
-//   1) Impulse response  : ป้อน 1 sample แล้วปล่อยศูนย์ ดู response ที่ไหลออกมา
-//   2) Step response      : ป้อนค่าคงที่ต่อเนื่อง ดูว่า settle เป็นค่าเท่าไร
-//
-// ผลลัพธ์จะ:
-//   - print ออกทาง console ($display)
-//   - dump เป็น waveform (.vcd) ดูด้วย GTKWave ได้
-//   - เขียนเป็นไฟล์ .csv (time, phase, sample_index, data_in, data_out)
-//     เอาไป plot ต่อใน Python/MATLAB/Excel ได้
-// =====================================================================
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
 
-module tb_lpf_hpf_top;
+module top_rtb();
 
-    // ---------------- parameter ของ testbench ----------------
-    localparam integer DATA_W    = 16;
-    localparam integer CLK_PERIOD = 10;      // ns
-    localparam integer N_IMPULSE_SAMPLES = 60;
-    localparam integer N_STEP_SAMPLES    = 80;
-    localparam signed [DATA_W-1:0] IMPULSE_AMPLITUDE = 16'sd10000;
-    localparam signed [DATA_W-1:0] STEP_AMPLITUDE    = 16'sd5000;
+    // =========================================================================
+    // Parameters
+    // =========================================================================
+    parameter integer DATA_W   = 10;
+    parameter integer FRAC_MAX = 12;
+    parameter integer ACC_W    = 16;
+    
+    // ????? Scale Factor ?????????? float ???? integer (Fixed-point)
+    localparam real SCALE_FACTOR = 256.0; // ??????????????????? 2^8
 
-    // ---------------- DUT signals ----------------
-    reg                      clk;
-    reg                      rst_n;
-    reg                      in_valid;
-    reg  signed [DATA_W-1:0] data_in;
-    wire                     out_valid;
-    wire signed [DATA_W-1:0] data_out;
+    // =========================================================================
+    // Signals
+    // =========================================================================
+    logic                     clk;
+    logic                     rst_n;
+    logic signed [DATA_W-1:0] data_in;
+    logic signed [ACC_W-1:0]  data_out;
 
-    integer                  fd;          // file handle สำหรับ csv
-    integer                  sample_idx;
-    integer                  k;
+    // ?????????????????????? Input
+    int  fd;
+    int  scan_status;
+    real data_real;
 
-    // ---------------- instantiate DUT ----------------
-    lpf_hpf_top #(
-        .DATA_W (DATA_W)
-    ) dut (
-        .clk       (clk),
-        .rst_n     (rst_n),
-        .in_valid  (in_valid),
-        .data_in   (data_in),
-        .out_valid (out_valid),
-        .data_out  (data_out)
+    // ?????????????????????? Output (?????????)
+    int  fd_out;
+
+    // =========================================================================
+    // Device Under Test (DUT)
+    // =========================================================================
+    //fir_lpf17 #(
+    //    .DATA_W(DATA_W),
+    //    .FRAC_MAX(FRAC_MAX),
+    //    .ACC_W(ACC_W)
+    //) uut (
+    //    .clk(clk),
+    //    .rst_n(rst_n),
+    //    .data_in(data_in),
+    //    .data_out(data_out)
+    //);
+    lpf_hpf_top uut(
+        .clk(clk),
+        .rst_n(rst_n),
+        .data_in(data_in),
+        .data_out(data_out)
     );
+    // =========================================================================
+    // Clock Generation
+    // =========================================================================
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk; // Clock period = 10ns (100MHz)
+    end
 
-    // ---------------- clock generation ----------------
-    initial clk = 1'b0;
-    always #(CLK_PERIOD/2) clk = ~clk;
+    // =========================================================================
+    // Reset Generation
+    // =========================================================================
+    initial begin
+        rst_n = 0;
+        data_in = '0;
+        #20;
+        rst_n = 1;
+    end
 
-    // ---------------- monitor: print + log ทุกครั้งที่ out_valid ----------------
-    always @(posedge clk) begin
-        if (out_valid) begin
-            $display("[t=%0t] sample=%0d  data_out=%0d", $time, sample_idx, data_out);
-            if (fd) $fwrite(fd, "%0t,%0d,%0d\n", $time, sample_idx, data_out);
-            sample_idx = sample_idx + 1;
+    // =========================================================================
+    // Dump Waveform
+    // =========================================================================
+    initial begin
+        $fsdbDumpfile("wave.fsdb");
+        $fsdbDumpvars(0, top_rtb);
+    end
+
+    // =========================================================================
+    // Open Output File & Write Output Data (????????????????)
+    // =========================================================================
+    initial begin
+        fd_out = $fopen("output_rtl.txt", "w");
+        if (fd_out == 0) begin
+            $display("ERROR: Could not open output_rtl.txt for writing");
+            $finish;
         end
     end
 
-    // ---------------- task: ป้อน 1 sample เข้า DUT ----------------
-    task send_sample(input signed [DATA_W-1:0] val);
-        begin
-            @(negedge clk);
-            in_valid = 1'b1;
-            data_in  = val;
+    // ????????? data_out ?????????? ???????????? Clock ?????????? Reset
+    always @(posedge clk) begin
+        if (rst_n) begin
+            $fdisplay(fd_out, "%d", data_out);
         end
-    endtask
+    end
 
-    task hold_idle(input integer n_cycles);
-        integer j;
-        begin
-            for (j = 0; j < n_cycles; j = j + 1) begin
-                @(negedge clk);
-                in_valid = 1'b0;
-                data_in  = {DATA_W{1'b0}};
+    // =========================================================================
+    // Read Input Data & Feed to DUT
+    // =========================================================================
+    initial begin
+        // ????????????????? Reset
+        @(posedge rst_n);
+        @(posedge clk);
+
+        // ??????????????????
+        fd = $fopen("input_data.txt", "r");
+        if (fd == 0) begin
+            $display("ERROR: Could not open input_data.txt");
+            $finish;
+        end
+
+        $display("START: Reading data from input_data.txt ...");
+
+        // ????????????? ?????????????? (EOF)
+        while (!$feof(fd)) begin
+            scan_status = $fscanf(fd, "%e", data_real);
+            
+            if (scan_status == 1) begin
+                // ???? float ???? integer (Fixed-point)
+                data_in = $floor(data_real * SCALE_FACTOR);
+                
+                // ?? 1 Clock cycle ??????????????????? DUT
+                @(posedge clk);
             end
         end
-    endtask
 
-    // ---------------- main stimulus ----------------
-    initial begin
-        // เปิดไฟล์ VCD สำหรับดู waveform
-        //$dumpfile("tb_lpf_hpf_top.vcd");
-        //$dumpvars(0, tb_lpf_hpf_top);
-        $fsdbDumpfile("wave.fsdb");
-        $fsdbDumpvars(0, tb_lpf_hpf_top);
-
-        // เปิดไฟล์ CSV สำหรับเก็บผลลัพธ์
-        fd = $fopen("lpf_hpf_output.csv", "w");
-        $fwrite(fd, "time_ns,sample_index,data_out\n");
-
-        // ---------------- reset ----------------
-        rst_n      = 1'b0;
-        in_valid   = 1'b0;
-        data_in    = {DATA_W{1'b0}};
-        sample_idx = 0;
-        repeat (3) @(negedge clk);
-        rst_n = 1'b1;
-        repeat (2) @(negedge clk);
-
-        // =========================================================
-        // TEST 1: Impulse response
-        // =========================================================
-        $display("\n===== TEST 1: Impulse Response =====");
-        send_sample(IMPULSE_AMPLITUDE);   // ส่ง impulse 1 sample
-        hold_idle(N_IMPULSE_SAMPLES);     // ปล่อยศูนย์ต่อไปเรื่อย ๆ ให้ response ไหลออกจนหมด
-        in_valid = 1'b0;
-
-        // เว้นช่วงพักก่อนเทสต์ถัดไป
-        repeat (5) @(negedge clk);
-
-        // =========================================================
-        // TEST 2: Step response
-        // =========================================================
-        $display("\n===== TEST 2: Step Response =====");
-        for (k = 0; k < N_STEP_SAMPLES; k = k + 1) begin
-            send_sample(STEP_AMPLITUDE);  // ป้อนค่าคงที่ต่อเนื่องทุก cycle
-        end
-        in_valid = 1'b0;
-        hold_idle(20);                    // ปล่อย pipeline ไหลจนหมด (flush)
-
-        $display("\n===== Testbench เสร็จสิ้น =====");
+        // ??????? Input
         $fclose(fd);
-        $finish;
-    end
+        $display("FINISH: All input data processed.");
+        
+        // ???????????????????????? Pipeline ??? Filter ?????
+        #200; 
 
-    // ---------------- timeout guard กันจำลองค้าง ----------------
-    initial begin
-        #200000;
-        $display("ERROR: Testbench timeout!");
+        // ??????? Output ??????????????
+        $fclose(fd_out);
+        $display("FINISH: Output data successfully written to output_rtl.txt.");
+        
         $finish;
     end
 

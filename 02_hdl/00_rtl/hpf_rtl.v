@@ -12,50 +12,52 @@
 // การ shift นี้เป็นค่าคงที่ตอน compile ไม่เสีย hardware เพิ่ม (แค่การเดินสาย/ปะ 0)
 // ===================================================================
 module fir_hpf15 #(
-    parameter integer DATA_W   = 16,
-    parameter integer FRAC_MAX = 10,   // จำนวนบิตเศษส่วนมากสุดในบรรดา tap ทั้งหมด
-    parameter integer ACC_W    = 46
+    parameter integer DATA_W   = 10,
+    parameter integer FRAC_MAX = 12,   // จำนวนบิตเศษส่วนมากสุดในบรรดา tap ทั้งหมด
+    parameter integer ACC_W    = 16
 )(
     input  wire                       clk,
     input  wire                       rst_n,
-    input  wire                       in_valid,
+    //input  wire                       in_valid,
     input  wire signed [DATA_W-1:0]   data_in,
 
-    output reg                        out_valid,
-    output reg  signed [DATA_W-1:0]   data_out
+    //output reg                        out_valid,
+    output reg  signed [ACC_W-1:0]   data_out
 );
 
     // ---------------- coefficient แต่ละ tap: <sign, int, frac> ตัวอย่าง ----------------
-    // tap0: <sign=1, int=1, frac=4> width=6 bit  ตัวอย่างค่า = -0.02
-    localparam signed [5:0] COEF_0 = 6'sb000000;
-    // tap1: <sign=1, int=2, frac=5> width=8 bit  ตัวอย่างค่า = 0.04
-    localparam signed [7:0] COEF_1 = 8'sb00000001;
-    // tap2: <sign=1, int=2, frac=6> width=9 bit  ตัวอย่างค่า = -0.07
-    localparam signed [8:0] COEF_2 = 9'sb111111100;
-    // tap3: <sign=1, int=3, frac=7> width=11 bit  ตัวอย่างค่า = 0.1
-    localparam signed [10:0] COEF_3 = 11'sb00000001101;
-    // tap4: <sign=1, int=3, frac=8> width=12 bit  ตัวอย่างค่า = -0.18
-    localparam signed [11:0] COEF_4 = 12'sb111111010010;
-    // tap5: <sign=1, int=3, frac=9> width=13 bit  ตัวอย่างค่า = 0.28
-    localparam signed [12:0] COEF_5 = 13'sb0000010001111;
-    // tap6: <sign=1, int=3, frac=10> width=14 bit  ตัวอย่างค่า = -0.6
-    localparam signed [13:0] COEF_6 = 14'sb11110110011010;
-    // tap7: <sign=1, int=3, frac=9> width=13 bit  ตัวอย่างค่า = 1.0
-    localparam signed [12:0] COEF_7 = 13'sb0001000000000;
-    // tap8: <sign=1, int=3, frac=8> width=12 bit  ตัวอย่างค่า = -0.6
-    localparam signed [11:0] COEF_8 = 12'sb111101100110;
-    // tap9: <sign=1, int=3, frac=7> width=11 bit  ตัวอย่างค่า = 0.28
-    localparam signed [10:0] COEF_9 = 11'sb00000100100;
-    // tap10: <sign=1, int=2, frac=6> width=9 bit  ตัวอย่างค่า = -0.18
-    localparam signed [8:0] COEF_10 = 9'sb111110100;
-    // tap11: <sign=1, int=2, frac=5> width=8 bit  ตัวอย่างค่า = 0.1
-    localparam signed [7:0] COEF_11 = 8'sb00000011;
-    // tap12: <sign=1, int=1, frac=4> width=6 bit  ตัวอย่างค่า = -0.07
-    localparam signed [5:0] COEF_12 = 6'sb111111;
-    // tap13: <sign=1, int=1, frac=4> width=6 bit  ตัวอย่างค่า = 0.04
-    localparam signed [5:0] COEF_13 = 6'sb000001;
-    // tap14: <sign=1, int=1, frac=4> width=6 bit  ตัวอย่างค่า = -0.02
-    localparam signed [5:0] COEF_14 = 6'sb000000;
+
+    //tap0:  <sign=1, int=0, frac=6>  dec = -0.0138499
+    localparam signed [6:0] COEF_0=7'sb1111111;
+    // tap1:  <sign=1, int=0, frac=7>  dec = -0.00270704
+    localparam signed [7:0] COEF_1=8'sb11111111;
+    // tap2:  <sign=1, int=0, frac=5>  dec = 0.0390404
+    localparam signed [5:0] COEF_2=6'sb000001;
+    // tap3:  <sign=1, int=0, frac=6>  dec = 0.0782134
+    localparam signed [6:0] COEF_3=7'sb0000101;
+    // tap4:  <sign=1, int=0, frac=7>  dec = 0.0404444
+    localparam signed [7:0] COEF_4=8'sb00000101;
+    // tap5:  <sign=1, int=0, frac=6>  dec = -0.106458
+    localparam signed [6:0] COEF_5=7'sb1111001;
+    // tap6:  <sign=1, int=0, frac=6>  dec = -0.288414
+    localparam signed [6:0] COEF_6=7'sb1101101;
+    // tap7:  <sign=1, int=0, frac=3>  dec = 0.628445
+    localparam signed [3:0] COEF_7=4'sb0101;
+    // tap8:  <sign=1, int=0, frac=6>  dec = -0.288414
+    localparam signed [6:0] COEF_8=7'sb1101101;
+    // tap9:  <sign=1, int=0, frac=6>  dec = -0.106458
+    localparam signed [6:0] COEF_9=7'sb1111001;
+    // tap10:  <sign=1, int=0, frac=7>  dec = 0.0404444
+    localparam signed [7:0] COEF_10=8'sb00000101;
+    // tap11:  <sign=1, int=0, frac=6>  dec = 0.0782134
+    localparam signed [6:0] COEF_11=7'sb0000101;
+    // tap12:  <sign=1, int=0, frac=5>  dec = 0.0390404
+    localparam signed [5:0] COEF_12=6'sb000001;
+    // tap13:  <sign=1, int=0, frac=7>  dec = -0.00270704
+    localparam signed [7:0] COEF_13=8'sb11111111;
+    // tap14:  <sign=1, int=0, frac=6>  dec = -0.0138499
+    localparam signed [6:0] COEF_14=7'sb1111111;
+
 
     // ---------------- shift amount ต่อ tap เพื่อ align frac ให้ตรงกับ FRAC_MAX ----------------
     localparam integer SHIFT_0 = 6;
@@ -82,7 +84,7 @@ module fir_hpf15 #(
         if (!rst_n) begin
             for (i = 0; i < 15; i = i + 1)
                 tap[i] <= {DATA_W{1'b0}};
-        end else if (in_valid) begin
+        end else begin
             tap[0] <= data_in;
             for (i = 1; i < 15; i = i + 1)
                 tap[i] <= tap[i-1];
@@ -90,38 +92,42 @@ module fir_hpf15 #(
     end
 
     // ---------------- multiply (แต่ละ tap x coefficient เฉพาะของตัวเอง) ----------------
-    wire signed [DATA_W+6-1:0] mult_0 = tap[0] * COEF_0;
+    wire signed [DATA_W+7-1:0] mult_0 = tap[0] * COEF_0;
     wire signed [DATA_W+8-1:0] mult_1 = tap[1] * COEF_1;
-    wire signed [DATA_W+9-1:0] mult_2 = tap[2] * COEF_2;
-    wire signed [DATA_W+11-1:0] mult_3 = tap[3] * COEF_3;
-    wire signed [DATA_W+12-1:0] mult_4 = tap[4] * COEF_4;
-    wire signed [DATA_W+13-1:0] mult_5 = tap[5] * COEF_5;
-    wire signed [DATA_W+14-1:0] mult_6 = tap[6] * COEF_6;
-    wire signed [DATA_W+13-1:0] mult_7 = tap[7] * COEF_7;
-    wire signed [DATA_W+12-1:0] mult_8 = tap[8] * COEF_8;
-    wire signed [DATA_W+11-1:0] mult_9 = tap[9] * COEF_9;
-    wire signed [DATA_W+9-1:0] mult_10 = tap[10] * COEF_10;
-    wire signed [DATA_W+8-1:0] mult_11 = tap[11] * COEF_11;
+    wire signed [DATA_W+6-1:0] mult_2 = tap[2] * COEF_2;
+    wire signed [DATA_W+7-1:0] mult_3 = tap[3] * COEF_3;
+    wire signed [DATA_W+8-1:0] mult_4 = tap[4] * COEF_4;
+
+    wire signed [DATA_W+7-1:0] mult_5 = tap[5] * COEF_5;
+    wire signed [DATA_W+7-1:0] mult_6 = tap[6] * COEF_6;
+    wire signed [DATA_W+4-1:0] mult_7 = tap[7] * COEF_7;
+    wire signed [DATA_W+7-1:0] mult_8 = tap[8] * COEF_8;
+    wire signed [DATA_W+7-1:0] mult_9 = tap[9] * COEF_9;
+
+    wire signed [DATA_W+8-1:0] mult_10 = tap[10] * COEF_10;
+    wire signed [DATA_W+7-1:0] mult_11 = tap[11] * COEF_11;
     wire signed [DATA_W+6-1:0] mult_12 = tap[12] * COEF_12;
-    wire signed [DATA_W+6-1:0] mult_13 = tap[13] * COEF_13;
-    wire signed [DATA_W+6-1:0] mult_14 = tap[14] * COEF_14;
+    wire signed [DATA_W+8-1:0] mult_13 = tap[13] * COEF_13;
+    wire signed [DATA_W+7-1:0] mult_14 = tap[14] * COEF_14;
 
     // ---------------- align frac (shift ซ้ายตาม SHIFT_x) ก่อนบวกรวม ----------------
-    wire signed [ACC_W-1:0] mult_aligned_0 = mult_0 <<< SHIFT_0;
-    wire signed [ACC_W-1:0] mult_aligned_1 = mult_1 <<< SHIFT_1;
-    wire signed [ACC_W-1:0] mult_aligned_2 = mult_2 <<< SHIFT_2;
-    wire signed [ACC_W-1:0] mult_aligned_3 = mult_3 <<< SHIFT_3;
-    wire signed [ACC_W-1:0] mult_aligned_4 = mult_4 <<< SHIFT_4;
-    wire signed [ACC_W-1:0] mult_aligned_5 = mult_5 <<< SHIFT_5;
-    wire signed [ACC_W-1:0] mult_aligned_6 = mult_6 <<< SHIFT_6;
-    wire signed [ACC_W-1:0] mult_aligned_7 = mult_7 <<< SHIFT_7;
-    wire signed [ACC_W-1:0] mult_aligned_8 = mult_8 <<< SHIFT_8;
-    wire signed [ACC_W-1:0] mult_aligned_9 = mult_9 <<< SHIFT_9;
-    wire signed [ACC_W-1:0] mult_aligned_10 = mult_10 <<< SHIFT_10;
-    wire signed [ACC_W-1:0] mult_aligned_11 = mult_11 <<< SHIFT_11;
-    wire signed [ACC_W-1:0] mult_aligned_12 = mult_12 <<< SHIFT_12;
-    wire signed [ACC_W-1:0] mult_aligned_13 = mult_13 <<< SHIFT_13;
-    wire signed [ACC_W-1:0] mult_aligned_14 = mult_14 <<< SHIFT_14;
+    wire signed [ACC_W-1:0] mult_aligned_0 = mult_0[DATA_W+7-1:1];
+    wire signed [ACC_W-1:0] mult_aligned_1 = mult_1[DATA_W+8-1:2];
+    wire signed [ACC_W-1:0] mult_aligned_2 = mult_2[DATA_W+6-1:0];
+    wire signed [ACC_W-1:0] mult_aligned_3 = mult_3[DATA_W+7-1:1];
+    wire signed [ACC_W-1:0] mult_aligned_4 = mult_4[DATA_W+8-1:2];
+                                                                 
+    wire signed [ACC_W-1:0] mult_aligned_5 = mult_5[DATA_W+7-1:1];
+    wire signed [ACC_W-1:0] mult_aligned_6 = mult_6[DATA_W+7-1:1];
+    wire signed [ACC_W-1:0] mult_aligned_7 = mult_7 <<< 2;//
+    wire signed [ACC_W-1:0] mult_aligned_8 = mult_8[DATA_W+7-1:1];
+    wire signed [ACC_W-1:0] mult_aligned_9 = mult_9[DATA_W+7-1:1];
+
+    wire signed [ACC_W-1:0] mult_aligned_10 = mult_10[DATA_W+8-1:2];
+    wire signed [ACC_W-1:0] mult_aligned_11 = mult_11[DATA_W+7-1:1];
+    wire signed [ACC_W-1:0] mult_aligned_12 = mult_12[DATA_W+6-1:0];
+    wire signed [ACC_W-1:0] mult_aligned_13 = mult_13[DATA_W+8-1:2];
+    wire signed [ACC_W-1:0] mult_aligned_14 = mult_14[DATA_W+7-1:1];
 
     // ---------------- adder chain (sum ทุก tap ที่ align แล้ว) ----------------
     reg signed [ACC_W-1:0] acc;
@@ -135,10 +141,8 @@ module fir_hpf15 #(
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             data_out  <= {DATA_W{1'b0}};
-            out_valid <= 1'b0;
         end else begin
-            data_out  <= acc[DATA_W+FRAC_MAX-1 -: DATA_W]; // *** ปรับ shift ตรงนี้ตาม Q-format จริง ***
-            out_valid <= in_valid;
+            data_out  <= acc; // *** ปรับ shift ตรงนี้ตาม Q-format จริง ***
         end
     end
 
