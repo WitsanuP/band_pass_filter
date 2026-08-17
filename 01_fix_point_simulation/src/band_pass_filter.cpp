@@ -18,10 +18,27 @@ std::vector<double> applyFIRFilter(const std::vector<double>& input, const std::
         for (size_t k = 0; k < numWeights; ++k) {
             // Check boundary to handle zero-padding for initial samples
             if (n >= k) {
-                sum += bit_trunc( bit_trunc(weights[k], BIT_TRUNC[k]) * bit_trunc(input[n - k],BIT_INPUT), BIT_ADDER);
+                sum += bit_trunc( bit_trunc(weights[k], BIT_TRUNC[k]) * bit_trunc(input[n - k],BIT_INPUT1), BIT_ADDER1);
             }
         }
-        output[n] =  bit_trunc(sum, BIT_OUTPUT);
+        output[n] =  bit_trunc(sum, BIT_ADDER1);
+    }
+    return output;
+}
+std::vector<double> applyFIRFilter2(const std::vector<double>& input, const std::vector<double>& weights, const std::vector<double>& BIT_TRUNC) {
+    size_t signalLength = input.size();
+    size_t numWeights = weights.size();
+    std::vector<double> output(signalLength, 0.0);
+
+    for (size_t n = 0; n < signalLength; ++n) {
+        double sum = 0.0;
+        for (size_t k = 0; k < numWeights; ++k) {
+            // Check boundary to handle zero-padding for initial samples
+            if (n >= k) {
+                sum += bit_trunc( bit_trunc(weights[k], BIT_TRUNC[k]) * bit_trunc(input[n - k],BIT_INPUT2), BIT_ADDER2);
+            }
+        }
+        output[n] =  bit_trunc(sum, BIT_ADDER2);
     }
     return output;
 }
@@ -59,7 +76,7 @@ int main() {
 
     // 4. Cascade Filtering: Input Signal -> LPF Stage -> HPF Stage -> Final BPF Output
     std::vector<double> bpfOutput = applyFIRFilter(inputSignal, lpfWeights, bit_trunc_lpf );
-    std::vector<double> hpfOutput = applyFIRFilter(bpfOutput, hpfWeights, bit_trunc_hpf );
+    std::vector<double> hpfOutput = applyFIRFilter2(bpfOutput, hpfWeights, bit_trunc_hpf );
 
     // 5. Write the final Band-Pass filtered results to output.txt separated by spaces
     std::ofstream outputFile(outputFilename);

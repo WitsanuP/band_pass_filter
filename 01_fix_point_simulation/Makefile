@@ -1,7 +1,7 @@
 CXX = g++
 BIN_DIR = bin
 SRC_DIR = src
-LOG_FILE = tests/log/input_bit.txt
+LOG_FILE = tests/log/output1.txt
 
 all: compile run sqnr
 

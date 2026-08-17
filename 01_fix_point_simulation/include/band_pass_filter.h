@@ -55,9 +55,11 @@ std::vector<double> bit_trunc_hpf = { // 15
 };
 
 //const int BIT_INPUT = 9;              // 38.4db
-const int BIT_INPUT = 8; //30.7073
-const int BIT_OUTPUT = 13; //30.7073
-const int BIT_ADDER = 13; //30.7073
+const int BIT_INPUT1 = 7; //30.7073
+const int BIT_ADDER1 = 10; //30.7073
+
+const int BIT_INPUT2 = 7; //30.7073
+const int BIT_ADDER2 = 12; //30.7073
 #endif
 
 #ifdef float_mode
@@ -96,10 +98,13 @@ std::vector<double> bit_trunc_hpf = { // 15
     -1, //12
     -1, //13
     -1, //14
-    -1 //15
+    -1//15
 };
 
-const int BIT_INPUT = -1;
-const int BIT_OUTPUT = -1;
+const int BIT_INPUT1 = -1; //30.7073
+const int BIT_ADDER1 = SWEEP0; //30.7073
+
+const int BIT_INPUT2 = -1; //30.7073
+const int BIT_ADDER2 = -1; //30.7073
 
 #endif
