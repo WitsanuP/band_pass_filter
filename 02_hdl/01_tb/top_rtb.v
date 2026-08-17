@@ -134,5 +134,52 @@ module top_rtb();
         
         $finish;
     end
+    // =========================================================================
+    // check output
+    // =========================================================================
+    integer int_ref_output;
+    integer diff_data;
+    integer fo;
+    integer int_scan_status; // 1. ???????????????????? scan_status
+    integer error_count=0;
+
+    initial begin
+        @(posedge rst_n);
+        repeat(3)@(posedge clk);
+        //@(posedge clk);
+
+        fo = $fopen("ref_output.txt", "r");
+        if (fo == 0) begin
+            $display("ERROR: Could not open ref_output.txt");
+            $finish;
+        end
+
+        $display("START: Reading data from ref_output.txt ...");
+
+        while (!$feof(fo)) begin
+            int_scan_status = $fscanf(fo, "%d\n", int_ref_output);
+
+            if (int_scan_status == 1) begin
+                @(posedge clk); // ????? Clock ????????
+                #1;             // ???????????????????? data_out ????
+                
+                diff_data = int_ref_output - $signed(data_out);
+
+                if (diff_data == 0) begin
+                    //$display("[PASS] Expected: %0d, Actual: %0d", int_ref_output, data_out);
+                end else begin
+                    $display("[FAIL] Expected: %0d, Actual: %0d (Diff: %0d)", int_ref_output, data_out, diff_data);
+                    error_count++;
+                end
+            end
+        end
+
+        $fclose(fo);
+        $display("FINISH: All read ref_data processed.\n");
+        $display("Error count : %d ", error_count);
+
+        #200;
+        $finish;
+    end
 
 endmodule
