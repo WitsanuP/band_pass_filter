@@ -1,5 +1,5 @@
 #include <math.h>
-
+/*
 // truncation
 double bit_trunc(double dfFLT, int  nTRUNC_BITS)
 {
@@ -19,3 +19,11 @@ double bit_trunc(double dfFLT, int  nTRUNC_BITS)
     dfTRUNC_NUM = dfINT_TMP + dfFLT_TMP;
     return(dfTRUNC_NUM);
 }	// end of trunc
+*/
+double bit_trunc(double dfFLT, int nTRUNC_BITS)
+{
+    if (nTRUNC_BITS < 0) return dfFLT;
+    if (nTRUNC_BITS == 0) return floor(dfFLT);
+    double dfPWR = pow(2.0, (double)nTRUNC_BITS);
+    return floor(dfFLT * dfPWR) / dfPWR;   // ???????????? ??????? floor(v) ????
+}

@@ -18,6 +18,7 @@ std::vector<double> lpfWeights = { // 17
     -0.0131570584659379
 };
 
+
 std::vector<double> hpfWeights = { // 15
     -0.013849874450988,
     -0.0027070372656163,
@@ -55,7 +56,7 @@ std::vector<double> bit_trunc_hpf = { // 15
 
 //const int BIT_INPUT = 9;              // 38.4db
 const int BIT_INPUT = 8; //30.7073
-const int BIT_OUTPUT = 8; //30.7073
+const int BIT_OUTPUT = 13; //30.7073
 const int BIT_ADDER = 13; //30.7073
 #endif
 
