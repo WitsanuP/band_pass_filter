@@ -5,12 +5,12 @@ module top_rtb();
     // =========================================================================
     // Parameters
     // =========================================================================
-    parameter integer DATA_W   = 10;
+    parameter integer DATA_W   = 9;
     parameter integer FRAC_MAX = 12;
-    parameter integer ACC_W    = 16;
+    parameter integer ACC_W    = 13;
     
     // ????? Scale Factor ?????????? float ???? integer (Fixed-point)
-    localparam real SCALE_FACTOR = 256.0; // ??????????????????? 2^8
+    localparam real SCALE_FACTOR = 128.0; // ??????????????????? 2^8
 
     // =========================================================================
     // Signals

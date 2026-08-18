@@ -5,25 +5,23 @@
 // จึงไม่ต้องส่ง coefficient เข้ามาจากภายนอกอีก
 // =====================================================================
 `timescale 1ns/1ps
-module top_rtl #(
-    parameter integer DATA_W = 10
-)(
+module top_rtl 
+(
     input  wire                     clk,
     input  wire                     rst_n,
     //input  wire                     in_valid,
-    input  wire signed [DATA_W-1:0] data_in,
+    input  wire signed [8:0] data_in,
 
     //output wire                     out_valid,
-    output wire signed [16-1:0] data_out
+    output wire signed [12:0] data_out
 );
 
-    wire signed [15:0] lpf_data_out;
-    wire signed [9:0] input_hpf;
-    assign input_hpf = {lpf_data_out[15],lpf_data_out[13:5]};
+    wire signed [10:0] lpf_data_out;
+    wire signed [7:0] input_hpf;
+    assign input_hpf = lpf_data_out[10:3];
+    //assign input_hpf = {lpf_data_out[10],{0},lpf_data_out[9:2]};
 
-    lpf_rtl #(
-        .DATA_W (DATA_W)
-    ) u_lpf (
+    lpf_rtl  u_lpf (
         .clk       (clk),
         .rst_n     (rst_n),
         //.in_valid  (in_valid),
@@ -32,9 +30,7 @@ module top_rtl #(
         .data_out  (lpf_data_out)
     );
 
-    hpf_rtl #(
-        .DATA_W (DATA_W)
-    ) u_hpf (
+    hpf_rtl u_hpf (
         .clk       (clk),
         .rst_n     (rst_n),
         //.in_valid  (lpf_out_valid),

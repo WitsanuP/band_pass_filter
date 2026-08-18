@@ -86,8 +86,8 @@ int main() {
     }
 
     outputFile << std::fixed << std::setprecision(20);
-    for (size_t i = 0; i < bpfOutput.size(); ++i) {
-        outputFile << bpfOutput[i] << (i == bpfOutput.size() - 1 ? "" : " ");
+    for (size_t i = 0; i < hpfOutput.size(); ++i) {
+        outputFile << hpfOutput[i] << (i == hpfOutput.size() - 1 ? "" : " ");
         outputFile << std::endl;
     }
     outputFile.close();

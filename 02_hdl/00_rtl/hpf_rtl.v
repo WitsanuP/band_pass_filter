@@ -12,9 +12,8 @@
 // การ shift นี้เป็นค่าคงที่ตอน compile ไม่เสีย hardware เพิ่ม (แค่การเดินสาย/ปะ 0)
 // ===================================================================
 module hpf_rtl #(
-    parameter integer DATA_W   = 10,
-    parameter integer FRAC_MAX = 12,   // จำนวนบิตเศษส่วนมากสุดในบรรดา tap ทั้งหมด
-    parameter integer ACC_W    = 16
+    parameter integer DATA_W   = 8,
+    parameter integer ACC_W    = 13
 )(
     input  wire                       clk,
     input  wire                       rst_n,
@@ -58,24 +57,6 @@ module hpf_rtl #(
     // tap14:  <sign=1, int=0, frac=6>  dec = -0.0138499
     localparam signed [6:0] COEF_14=7'sb1111111;
 
-
-    // ---------------- shift amount ต่อ tap เพื่อ align frac ให้ตรงกับ FRAC_MAX ----------------
-    localparam integer SHIFT_0 = 6;
-    localparam integer SHIFT_1 = 5;
-    localparam integer SHIFT_2 = 4;
-    localparam integer SHIFT_3 = 3;
-    localparam integer SHIFT_4 = 2;
-    localparam integer SHIFT_5 = 1;
-    localparam integer SHIFT_6 = 0;
-    localparam integer SHIFT_7 = 1;
-    localparam integer SHIFT_8 = 2;
-    localparam integer SHIFT_9 = 3;
-    localparam integer SHIFT_10 = 4;
-    localparam integer SHIFT_11 = 5;
-    localparam integer SHIFT_12 = 6;
-    localparam integer SHIFT_13 = 6;
-    localparam integer SHIFT_14 = 6;
-
     // ---------------- tapped delay line (D -> D -> ... -> D) ----------------
     reg signed [DATA_W-1:0] tap [0:14];
     integer i;
@@ -111,23 +92,23 @@ module hpf_rtl #(
     wire signed [DATA_W+7-1:0] mult_14 = tap[14] * COEF_14;
 
     // ---------------- align frac (shift ซ้ายตาม SHIFT_x) ก่อนบวกรวม ----------------
-    wire signed [ACC_W-1:0] mult_aligned_0 = mult_0[DATA_W+7-1:1];
-    wire signed [ACC_W-1:0] mult_aligned_1 = mult_1[DATA_W+8-1:2];
-    wire signed [ACC_W-1:0] mult_aligned_2 = mult_2[DATA_W+6-1:0];
-    wire signed [ACC_W-1:0] mult_aligned_3 = mult_3[DATA_W+7-1:1];
-    wire signed [ACC_W-1:0] mult_aligned_4 = mult_4[DATA_W+8-1:2];
+    wire signed [ACC_W-1:0] mult_aligned_0 = {mult_0[DATA_W+7-1],mult_0[DATA_W+7-3:DATA_W+7-3-11]};
+    wire signed [ACC_W-1:0] mult_aligned_1 = {mult_1[DATA_W+8-1],mult_1[DATA_W+8-3:DATA_W+8-3-11]};
+    wire signed [ACC_W-1:0] mult_aligned_2 = {mult_2[DATA_W+6-1],mult_2[DATA_W+6-3:DATA_W+6-3-11]};
+    wire signed [ACC_W-1:0] mult_aligned_3 = {mult_3[DATA_W+7-1],mult_3[DATA_W+7-3:DATA_W+7-3-11]};
+    wire signed [ACC_W-1:0] mult_aligned_4 = {mult_4[DATA_W+8-1],mult_4[DATA_W+8-3:DATA_W+8-3-11]};
                                                                  
-    wire signed [ACC_W-1:0] mult_aligned_5 = mult_5[DATA_W+7-1:1];
-    wire signed [ACC_W-1:0] mult_aligned_6 = mult_6[DATA_W+7-1:1];
-    wire signed [ACC_W-1:0] mult_aligned_7 = mult_7 <<< 2;//
-    wire signed [ACC_W-1:0] mult_aligned_8 = mult_8[DATA_W+7-1:1];
-    wire signed [ACC_W-1:0] mult_aligned_9 = mult_9[DATA_W+7-1:1];
+    wire signed [ACC_W-1:0] mult_aligned_5 = {mult_5[DATA_W+7-1],mult_5[DATA_W+7-3:DATA_W+7-3-11]};
+    wire signed [ACC_W-1:0] mult_aligned_6 = {mult_6[DATA_W+7-1],mult_6[DATA_W+7-3:DATA_W+7-3-11]};
+    wire signed [ACC_W-1:0] mult_aligned_7 = {mult_7[DATA_W+4-1],mult_7[DATA_W+4-3:DATA_W+4-3-11+2],2'b00};
+    wire signed [ACC_W-1:0] mult_aligned_8 = {mult_8[DATA_W+7-1],mult_8[DATA_W+7-3:DATA_W+7-3-11]};
+    wire signed [ACC_W-1:0] mult_aligned_9 = {mult_9[DATA_W+7-1],mult_9[DATA_W+7-3:DATA_W+7-3-11]};
 
-    wire signed [ACC_W-1:0] mult_aligned_10 = mult_10[DATA_W+8-1:2];
-    wire signed [ACC_W-1:0] mult_aligned_11 = mult_11[DATA_W+7-1:1];
-    wire signed [ACC_W-1:0] mult_aligned_12 = mult_12[DATA_W+6-1:0];
-    wire signed [ACC_W-1:0] mult_aligned_13 = mult_13[DATA_W+8-1:2];
-    wire signed [ACC_W-1:0] mult_aligned_14 = mult_14[DATA_W+7-1:1];
+    wire signed [ACC_W-1:0] mult_aligned_10 = {mult_10[DATA_W+8-1],mult_10[DATA_W+8-3:DATA_W+8-3-11]};
+    wire signed [ACC_W-1:0] mult_aligned_11 = {mult_11[DATA_W+7-1],mult_11[DATA_W+7-3:DATA_W+7-3-11]};
+    wire signed [ACC_W-1:0] mult_aligned_12 = {mult_12[DATA_W+6-1],mult_12[DATA_W+6-3:DATA_W+6-3-11]};
+    wire signed [ACC_W-1:0] mult_aligned_13 = {mult_13[DATA_W+8-1],mult_13[DATA_W+8-3:DATA_W+8-3-11]};
+    wire signed [ACC_W-1:0] mult_aligned_14 = {mult_14[DATA_W+7-1],mult_14[DATA_W+7-3:DATA_W+7-3-11]};
 
     // ---------------- adder chain (sum ทุก tap ที่ align แล้ว) ----------------
     reg signed [ACC_W-1:0] acc;
@@ -140,7 +121,7 @@ module hpf_rtl #(
     //           ปรับตำแหน่ง shift ตรงนี้ให้ตรงกับ Q-format ที่ต้องการของ data_out
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            data_out  <= {DATA_W{1'b0}};
+            data_out  <= {ACC_W{1'b0}};
         end else begin
             data_out  <= acc; // *** ปรับ shift ตรงนี้ตาม Q-format จริง ***
         end
