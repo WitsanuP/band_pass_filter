@@ -52,7 +52,7 @@ module top_rtb();
     // =========================================================================
     initial begin
         clk = 0;
-        forever #5 clk = ~clk; // Clock period = 10ns (100MHz)
+        forever #2.5 clk = ~clk; // Clock period = 10ns (100MHz)
     end
 
     // =========================================================================
@@ -145,7 +145,7 @@ module top_rtb();
 
     initial begin
         @(posedge rst_n);
-        repeat(3)@(posedge clk);
+        repeat(3+4+3)@(posedge clk);
         //@(posedge clk);
 
         fo = $fopen("ref_output.txt", "r");

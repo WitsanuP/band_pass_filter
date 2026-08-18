@@ -120,21 +120,30 @@ module lpf_rtl #(
     wire signed [ACC_W-1:0] mult_aligned_15 = {mult_15[DATA_W+6-1],mult_15[DATA_W+6-4:DATA_W+6-4-9]};
     wire signed [ACC_W-1:0] mult_aligned_16 = {mult_16[DATA_W+7-1],mult_16[DATA_W+7-4:DATA_W+7-4-9]};
 
-    // ---------------- adder chain (sum ทุก tap ที่ align แล้ว) ----------------
-    reg signed [ACC_W-1:0] acc;
-    always @(*) begin
-        acc = mult_aligned_0 + mult_aligned_1 + mult_aligned_2 + mult_aligned_3 + mult_aligned_4 + mult_aligned_5 + mult_aligned_6 + mult_aligned_7 + mult_aligned_8 + mult_aligned_9 + mult_aligned_10 + mult_aligned_11 + mult_aligned_12 + mult_aligned_13 + mult_aligned_14 + mult_aligned_15 + mult_aligned_16;
-    end
-
-    // ---------------- output register ----------------
-    // หมายเหตุ: ผลรวม acc มี frac = FRAC_MAX (+ frac ของ data_in ถ้ามี)
-    //           ปรับตำแหน่ง shift ตรงนี้ให้ตรงกับ Q-format ที่ต้องการของ data_out
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            data_out  <= {ACC_W{1'b0}};
-        end else begin
-            data_out  <= acc; // *** ปรับ shift ตรงนี้ตาม Q-format จริง ***
-        end
-    end
-
+// ---------------- adder tree (Pipelined 5 stages) ----------------
+    adder_tree_17 #(
+        .W(ACC_W)
+    ) u_adder_tree (
+        .clk    (clk),
+        .rst_n  (rst_n),
+        .in0    (mult_aligned_0),
+        .in1    (mult_aligned_1),
+        .in2    (mult_aligned_2),
+        .in3    (mult_aligned_3),
+        .in4    (mult_aligned_4),
+        .in5    (mult_aligned_5),
+        .in6    (mult_aligned_6),
+        .in7    (mult_aligned_7),
+        .in8    (mult_aligned_8),
+        .in9    (mult_aligned_9),
+        .in10   (mult_aligned_10),
+        .in11   (mult_aligned_11),
+        .in12   (mult_aligned_12),
+        .in13   (mult_aligned_13),
+        .in14   (mult_aligned_14),
+        .in15   (mult_aligned_15),
+        .in16   (mult_aligned_16),
+        .out_sum(data_out) // ส่งผลรวมออกไปยัง port data_out โดยตรง
+    );
+    
 endmodule
