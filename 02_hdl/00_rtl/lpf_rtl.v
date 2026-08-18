@@ -13,7 +13,7 @@
 // ===================================================================
 module lpf_rtl #(
     parameter integer DATA_W   = 9, // <1,1,7>
-    parameter integer ACC_W    = 12 // <1,1,10>
+    parameter integer ACC_W    = 11 // <1,0,10>
 )(
     input  wire                       clk,
     input  wire                       rst_n,
@@ -99,26 +99,26 @@ module lpf_rtl #(
 
     // ---------------- align frac (shift ซ้ายตาม SHIFT_x) ก่อนบวกรวม ----------------
     //wire signed [ACC_W-1:0] mult_aligned_0 = mult_0[DATA_W+7-1:1];
-    wire signed [ACC_W-1:0] mult_aligned_0 = {mult_0[DATA_W+7-1],mult_0[DATA_W+7-3:DATA_W+7-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_1 = {mult_1[DATA_W+6-1],mult_1[DATA_W+6-3:DATA_W+6-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_2 = {mult_2[DATA_W+6-1],mult_2[DATA_W+6-3:DATA_W+6-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_3 = {mult_3[DATA_W+8-1],mult_3[DATA_W+8-3:DATA_W+8-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_4 = {mult_4[DATA_W+5-1],mult_4[DATA_W+5-3:DATA_W+5-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_0 = {mult_0[DATA_W+7-1],mult_0[DATA_W+7-4:DATA_W+7-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_1 = {mult_1[DATA_W+6-1],mult_1[DATA_W+6-4:DATA_W+6-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_2 = {mult_2[DATA_W+6-1],mult_2[DATA_W+6-4:DATA_W+6-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_3 = {mult_3[DATA_W+8-1],mult_3[DATA_W+8-4:DATA_W+8-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_4 = {mult_4[DATA_W+5-1],mult_4[DATA_W+5-4:DATA_W+5-4-9]};
                                                                  
-    wire signed [ACC_W-1:0] mult_aligned_5 = {mult_5[DATA_W+8-1],mult_5[DATA_W+8-3:DATA_W+8-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_6 = {mult_6[DATA_W+7-1],mult_6[DATA_W+7-3:DATA_W+7-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_7 = {mult_7[DATA_W+8-1],mult_7[DATA_W+8-3:DATA_W+8-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_8 = {mult_8[DATA_W+4-1],mult_8[DATA_W+4-3:DATA_W+4-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_9 = {mult_9[DATA_W+8-1],mult_9[DATA_W+8-3:DATA_W+8-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_5 = {mult_5[DATA_W+8-1],mult_5[DATA_W+8-4:DATA_W+8-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_6 = {mult_6[DATA_W+7-1],mult_6[DATA_W+7-4:DATA_W+7-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_7 = {mult_7[DATA_W+8-1],mult_7[DATA_W+8-4:DATA_W+8-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_8 = {mult_8[DATA_W+4-1],mult_8[DATA_W+4-4:DATA_W+4-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_9 = {mult_9[DATA_W+8-1],mult_9[DATA_W+8-4:DATA_W+8-4-9]};
 
-    wire signed [ACC_W-1:0] mult_aligned_10 = {mult_10[DATA_W+7-1],mult_10[DATA_W+7-3:DATA_W+7-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_11 = {mult_11[DATA_W+8-1],mult_11[DATA_W+8-3:DATA_W+8-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_12 = {mult_12[DATA_W+5-1],mult_12[DATA_W+5-3:DATA_W+5-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_13 = {mult_13[DATA_W+8-1],mult_13[DATA_W+8-3:DATA_W+8-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_14 = {mult_14[DATA_W+6-1],mult_14[DATA_W+6-3:DATA_W+6-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_10 = {mult_10[DATA_W+7-1],mult_10[DATA_W+7-4:DATA_W+7-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_11 = {mult_11[DATA_W+8-1],mult_11[DATA_W+8-4:DATA_W+8-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_12 = {mult_12[DATA_W+5-1],mult_12[DATA_W+5-4:DATA_W+5-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_13 = {mult_13[DATA_W+8-1],mult_13[DATA_W+8-4:DATA_W+8-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_14 = {mult_14[DATA_W+6-1],mult_14[DATA_W+6-4:DATA_W+6-4-9]};
                                                                    
-    wire signed [ACC_W-1:0] mult_aligned_15 = {mult_15[DATA_W+6-1],mult_15[DATA_W+6-3:DATA_W+6-3-9-1]};
-    wire signed [ACC_W-1:0] mult_aligned_16 = {mult_16[DATA_W+7-1],mult_16[DATA_W+7-3:DATA_W+7-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_15 = {mult_15[DATA_W+6-1],mult_15[DATA_W+6-4:DATA_W+6-4-9]};
+    wire signed [ACC_W-1:0] mult_aligned_16 = {mult_16[DATA_W+7-1],mult_16[DATA_W+7-4:DATA_W+7-4-9]};
 
     // ---------------- adder chain (sum ทุก tap ที่ align แล้ว) ----------------
     reg signed [ACC_W-1:0] acc;

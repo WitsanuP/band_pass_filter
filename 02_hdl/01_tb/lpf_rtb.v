@@ -18,7 +18,7 @@ module tb_lpf_hpf_top();
     logic                     clk;
     logic                     rst_n;
     logic signed [9-1:0] data_in;
-    logic signed [12-1:0]  data_out;
+    logic signed [11-1:0]  data_out;
 
     // ?????????????????????? Input
     int  fd;
