@@ -12,9 +12,8 @@
 // การ shift นี้เป็นค่าคงที่ตอน compile ไม่เสีย hardware เพิ่ม (แค่การเดินสาย/ปะ 0)
 // ===================================================================
 module lpf_rtl #(
-    parameter integer DATA_W   = 10,
-    parameter integer FRAC_MAX = 12,   // จำนวนบิตเศษส่วนมากสุดในบรรดา tap ทั้งหมด
-    parameter integer ACC_W    = 16
+    parameter integer DATA_W   = 9, // <1,1,7>
+    parameter integer ACC_W    = 12 // <1,1,10>
 )(
     input  wire                       clk,
     input  wire                       rst_n,
@@ -61,25 +60,6 @@ module lpf_rtl #(
     // tap16:  <sign=1, int=0, frac=6>  dec = -0.0131571
     localparam signed [6:0] COEF_16=7'sb1111111;
 
-    // ---------------- shift amount ต่อ tap เพื่อ align frac ให้ตรงกับ FRAC_MAX ----------------
-    localparam integer SHIFT_0 = 8;
-    localparam integer SHIFT_1 = 7;
-    localparam integer SHIFT_2 = 6;
-    localparam integer SHIFT_3 = 5;
-    localparam integer SHIFT_4 = 4;
-    localparam integer SHIFT_5 = 3;
-    localparam integer SHIFT_6 = 2;
-    localparam integer SHIFT_7 = 1;
-    localparam integer SHIFT_8 = 0;
-    localparam integer SHIFT_9 = 1;
-    localparam integer SHIFT_10 = 2;
-    localparam integer SHIFT_11 = 3;
-    localparam integer SHIFT_12 = 4;
-    localparam integer SHIFT_13 = 5;
-    localparam integer SHIFT_14 = 6;
-    localparam integer SHIFT_15 = 7;
-    localparam integer SHIFT_16 = 8;
-
     // ---------------- tapped delay line (D -> D -> ... -> D) ----------------
     reg signed [DATA_W-1:0] tap [0:16];
     integer i;
@@ -118,26 +98,27 @@ module lpf_rtl #(
     wire signed [DATA_W+7-1:0] mult_16 = tap[16] * COEF_16;
 
     // ---------------- align frac (shift ซ้ายตาม SHIFT_x) ก่อนบวกรวม ----------------
-    wire signed [ACC_W-1:0] mult_aligned_0 = mult_0[DATA_W+7-1:1];
-    wire signed [ACC_W-1:0] mult_aligned_1 = mult_1[DATA_W+6-1:0];
-    wire signed [ACC_W-1:0] mult_aligned_2 = mult_2[DATA_W+6-1:0];
-    wire signed [ACC_W-1:0] mult_aligned_3 = mult_3[DATA_W+8-1:2];
-    wire signed [ACC_W-1:0] mult_aligned_4 = mult_4 <<< 1 ;
+    //wire signed [ACC_W-1:0] mult_aligned_0 = mult_0[DATA_W+7-1:1];
+    wire signed [ACC_W-1:0] mult_aligned_0 = {mult_0[DATA_W+7-1],mult_0[DATA_W+7-3:DATA_W+7-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_1 = {mult_1[DATA_W+6-1],mult_1[DATA_W+6-3:DATA_W+6-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_2 = {mult_2[DATA_W+6-1],mult_2[DATA_W+6-3:DATA_W+6-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_3 = {mult_3[DATA_W+8-1],mult_3[DATA_W+8-3:DATA_W+8-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_4 = {mult_4[DATA_W+5-1],mult_4[DATA_W+5-3:DATA_W+5-3-9-1]};
                                                                  
-    wire signed [ACC_W-1:0] mult_aligned_5 = mult_5[DATA_W+8-1:2];
-    wire signed [ACC_W-1:0] mult_aligned_6 = mult_6[DATA_W+7-1:1];
-    wire signed [ACC_W-1:0] mult_aligned_7 = mult_7[DATA_W+8-1:2];
-    wire signed [ACC_W-1:0] mult_aligned_8 = mult_8 <<< 2 ;
-    wire signed [ACC_W-1:0] mult_aligned_9 = mult_9[DATA_W+8-1:2];
+    wire signed [ACC_W-1:0] mult_aligned_5 = {mult_5[DATA_W+8-1],mult_5[DATA_W+8-3:DATA_W+8-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_6 = {mult_6[DATA_W+7-1],mult_6[DATA_W+7-3:DATA_W+7-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_7 = {mult_7[DATA_W+8-1],mult_7[DATA_W+8-3:DATA_W+8-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_8 = {mult_8[DATA_W+4-1],mult_8[DATA_W+4-3:DATA_W+4-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_9 = {mult_9[DATA_W+8-1],mult_9[DATA_W+8-3:DATA_W+8-3-9-1]};
 
-    wire signed [ACC_W-1:0] mult_aligned_10 = mult_10[DATA_W+7-1:1];
-    wire signed [ACC_W-1:0] mult_aligned_11 = mult_11[DATA_W+8-1:2];
-    wire signed [ACC_W-1:0] mult_aligned_12 = mult_12 << 1 ;
-    wire signed [ACC_W-1:0] mult_aligned_13 = mult_13[DATA_W+8-1:2];
-    wire signed [ACC_W-1:0] mult_aligned_14 = mult_14[DATA_W+6-1:0];
+    wire signed [ACC_W-1:0] mult_aligned_10 = {mult_10[DATA_W+7-1],mult_10[DATA_W+7-3:DATA_W+7-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_11 = {mult_11[DATA_W+8-1],mult_11[DATA_W+8-3:DATA_W+8-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_12 = {mult_12[DATA_W+5-1],mult_12[DATA_W+5-3:DATA_W+5-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_13 = {mult_13[DATA_W+8-1],mult_13[DATA_W+8-3:DATA_W+8-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_14 = {mult_14[DATA_W+6-1],mult_14[DATA_W+6-3:DATA_W+6-3-9-1]};
                                                                    
-    wire signed [ACC_W-1:0] mult_aligned_15 = mult_15[DATA_W+6-1:0];
-    wire signed [ACC_W-1:0] mult_aligned_16 = mult_16[DATA_W+7-1:1];
+    wire signed [ACC_W-1:0] mult_aligned_15 = {mult_15[DATA_W+6-1],mult_15[DATA_W+6-3:DATA_W+6-3-9-1]};
+    wire signed [ACC_W-1:0] mult_aligned_16 = {mult_16[DATA_W+7-1],mult_16[DATA_W+7-3:DATA_W+7-3-9-1]};
 
     // ---------------- adder chain (sum ทุก tap ที่ align แล้ว) ----------------
     reg signed [ACC_W-1:0] acc;
@@ -150,7 +131,7 @@ module lpf_rtl #(
     //           ปรับตำแหน่ง shift ตรงนี้ให้ตรงกับ Q-format ที่ต้องการของ data_out
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            data_out  <= {DATA_W{1'b0}};
+            data_out  <= {ACC_W{1'b0}};
         end else begin
             data_out  <= acc; // *** ปรับ shift ตรงนี้ตาม Q-format จริง ***
         end

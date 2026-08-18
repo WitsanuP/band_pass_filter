@@ -5,20 +5,20 @@ module tb_lpf_hpf_top();
     // =========================================================================
     // Parameters
     // =========================================================================
-    parameter integer DATA_W   = 10;
-    parameter integer FRAC_MAX = 12;
-    parameter integer ACC_W    = 16;
+    //parameter integer DATA_W   = 10;
+    //parameter integer FRAC_MAX = 12;
+    //parameter integer ACC_W    = 16;
     
     // ????? Scale Factor ?????????? float ???? integer (Fixed-point)
-    localparam real SCALE_FACTOR = 256.0; // ??????????????????? 2^8
+    localparam real SCALE_FACTOR = 128.0; // ??????????????????? 2^8
 
     // =========================================================================
     // Signals
     // =========================================================================
     logic                     clk;
     logic                     rst_n;
-    logic signed [DATA_W-1:0] data_in;
-    logic signed [ACC_W-1:0]  data_out;
+    logic signed [9-1:0] data_in;
+    logic signed [12-1:0]  data_out;
 
     // ?????????????????????? Input
     int  fd;
@@ -31,11 +31,7 @@ module tb_lpf_hpf_top();
     // =========================================================================
     // Device Under Test (DUT)
     // =========================================================================
-    fir_lpf17 #(
-        .DATA_W(DATA_W),
-        .FRAC_MAX(FRAC_MAX),
-        .ACC_W(ACC_W)
-    ) uut (
+    lpf_rtl uut (
         .clk(clk),
         .rst_n(rst_n),
         .data_in(data_in),
