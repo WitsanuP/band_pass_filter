@@ -92,24 +92,59 @@ module hpf_rtl #(
     wire signed [DATA_W+7-1:0] mult_14 = tap[14] * COEF_14;
 
     // ---------------- align frac (shift ซ้ายตาม SHIFT_x) ก่อนบวกรวม ----------------
-    wire signed [ACC_W-1:0] mult_aligned_0 = {mult_0[DATA_W+7-1],mult_0[DATA_W+7-3:DATA_W+7-3-11]};
-    wire signed [ACC_W-1:0] mult_aligned_1 = {mult_1[DATA_W+8-1],mult_1[DATA_W+8-3:DATA_W+8-3-11]};
-    wire signed [ACC_W-1:0] mult_aligned_2 = {mult_2[DATA_W+6-1],mult_2[DATA_W+6-3:DATA_W+6-3-11]};
-    wire signed [ACC_W-1:0] mult_aligned_3 = {mult_3[DATA_W+7-1],mult_3[DATA_W+7-3:DATA_W+7-3-11]};
-    wire signed [ACC_W-1:0] mult_aligned_4 = {mult_4[DATA_W+8-1],mult_4[DATA_W+8-3:DATA_W+8-3-11]};
-                                                                 
-    wire signed [ACC_W-1:0] mult_aligned_5 = {mult_5[DATA_W+7-1],mult_5[DATA_W+7-3:DATA_W+7-3-11]};
-    wire signed [ACC_W-1:0] mult_aligned_6 = {mult_6[DATA_W+7-1],mult_6[DATA_W+7-3:DATA_W+7-3-11]};
-    wire signed [ACC_W-1:0] mult_aligned_7 = {mult_7[DATA_W+4-1],mult_7[DATA_W+4-3:DATA_W+4-3-11+2],2'b00};
-    wire signed [ACC_W-1:0] mult_aligned_8 = {mult_8[DATA_W+7-1],mult_8[DATA_W+7-3:DATA_W+7-3-11]};
-    wire signed [ACC_W-1:0] mult_aligned_9 = {mult_9[DATA_W+7-1],mult_9[DATA_W+7-3:DATA_W+7-3-11]};
+    reg signed [ACC_W-1:0] mult_aligned_0;
+    reg signed [ACC_W-1:0] mult_aligned_1;
+    reg signed [ACC_W-1:0] mult_aligned_2;
+    reg signed [ACC_W-1:0] mult_aligned_3;
+    reg signed [ACC_W-1:0] mult_aligned_4;
+    reg signed [ACC_W-1:0] mult_aligned_5;
+    reg signed [ACC_W-1:0] mult_aligned_6;
+    reg signed [ACC_W-1:0] mult_aligned_7;
+    reg signed [ACC_W-1:0] mult_aligned_8;
+    reg signed [ACC_W-1:0] mult_aligned_9;
+    reg signed [ACC_W-1:0] mult_aligned_10;
+    reg signed [ACC_W-1:0] mult_aligned_11;
+    reg signed [ACC_W-1:0] mult_aligned_12;
+    reg signed [ACC_W-1:0] mult_aligned_13;
+    reg signed [ACC_W-1:0] mult_aligned_14;
+    
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            mult_aligned_0  <= {ACC_W{1'b0}};
+            mult_aligned_1  <= {ACC_W{1'b0}};
+            mult_aligned_2  <= {ACC_W{1'b0}};
+            mult_aligned_3  <= {ACC_W{1'b0}};
+            mult_aligned_4  <= {ACC_W{1'b0}};
+            mult_aligned_5  <= {ACC_W{1'b0}};
+            mult_aligned_6  <= {ACC_W{1'b0}};
+            mult_aligned_7  <= {ACC_W{1'b0}};
+            mult_aligned_8  <= {ACC_W{1'b0}};
+            mult_aligned_9  <= {ACC_W{1'b0}};
+            mult_aligned_10 <= {ACC_W{1'b0}};
+            mult_aligned_11 <= {ACC_W{1'b0}};
+            mult_aligned_12 <= {ACC_W{1'b0}};
+            mult_aligned_13 <= {ACC_W{1'b0}};
+            mult_aligned_14 <= {ACC_W{1'b0}};
+        end else begin
+            mult_aligned_0 <= {mult_0[DATA_W+7-1],mult_0[DATA_W+7-3:DATA_W+7-3-11]};
+            mult_aligned_1 <= {mult_1[DATA_W+8-1],mult_1[DATA_W+8-3:DATA_W+8-3-11]};
+            mult_aligned_2 <= {mult_2[DATA_W+6-1],mult_2[DATA_W+6-3:DATA_W+6-3-11]};
+            mult_aligned_3 <= {mult_3[DATA_W+7-1],mult_3[DATA_W+7-3:DATA_W+7-3-11]};
+            mult_aligned_4 <= {mult_4[DATA_W+8-1],mult_4[DATA_W+8-3:DATA_W+8-3-11]};
+                                                 
+            mult_aligned_5 <= {mult_5[DATA_W+7-1],mult_5[DATA_W+7-3:DATA_W+7-3-11]};
+            mult_aligned_6 <= {mult_6[DATA_W+7-1],mult_6[DATA_W+7-3:DATA_W+7-3-11]};
+            mult_aligned_7 <= {mult_7[DATA_W+4-1],mult_7[DATA_W+4-3:DATA_W+4-3-11+2],2'b00};
+            mult_aligned_8 <= {mult_8[DATA_W+7-1],mult_8[DATA_W+7-3:DATA_W+7-3-11]};
+            mult_aligned_9 <= {mult_9[DATA_W+7-1],mult_9[DATA_W+7-3:DATA_W+7-3-11]};
 
-    wire signed [ACC_W-1:0] mult_aligned_10 = {mult_10[DATA_W+8-1],mult_10[DATA_W+8-3:DATA_W+8-3-11]};
-    wire signed [ACC_W-1:0] mult_aligned_11 = {mult_11[DATA_W+7-1],mult_11[DATA_W+7-3:DATA_W+7-3-11]};
-    wire signed [ACC_W-1:0] mult_aligned_12 = {mult_12[DATA_W+6-1],mult_12[DATA_W+6-3:DATA_W+6-3-11]};
-    wire signed [ACC_W-1:0] mult_aligned_13 = {mult_13[DATA_W+8-1],mult_13[DATA_W+8-3:DATA_W+8-3-11]};
-    wire signed [ACC_W-1:0] mult_aligned_14 = {mult_14[DATA_W+7-1],mult_14[DATA_W+7-3:DATA_W+7-3-11]};
-
+            mult_aligned_10 <= {mult_10[DATA_W+8-1],mult_10[DATA_W+8-3:DATA_W+8-3-11]};
+            mult_aligned_11 <= {mult_11[DATA_W+7-1],mult_11[DATA_W+7-3:DATA_W+7-3-11]};
+            mult_aligned_12 <= {mult_12[DATA_W+6-1],mult_12[DATA_W+6-3:DATA_W+6-3-11]};
+            mult_aligned_13 <= {mult_13[DATA_W+8-1],mult_13[DATA_W+8-3:DATA_W+8-3-11]};
+            mult_aligned_14 <= {mult_14[DATA_W+7-1],mult_14[DATA_W+7-3:DATA_W+7-3-11]};
+        end
+    end
 // ---------------- adder tree (Pipelined 4 stages) ----------------
     adder_tree_15 #(
         .W(ACC_W)
