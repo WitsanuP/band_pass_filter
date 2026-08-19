@@ -5,8 +5,8 @@
 01_fix_point_simulation/bin
 
 02_hdl/03_sim/
-
 02_hdl/033_sim/
-
+02_hdl/04_sim
 
 tool/bin/
+tool/tmp/
