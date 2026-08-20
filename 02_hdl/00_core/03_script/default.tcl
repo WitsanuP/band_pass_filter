@@ -5,11 +5,11 @@ if {![file exists $REPORTS_DIR]} {file mkdir $REPORTS_DIR}
 
 #@gui_start
 gui_set_pref_value -category {SelectByNamePalette} -key {ObjectType} -value {LeafCells}
-read_file -format verilog {/home/MS_115/acc01/remote/band_pass_filter/02_hdl/00_rtl/adder/adder_tree_15.v \
-                            /home/MS_115/acc01/remote/band_pass_filter/02_hdl/00_rtl/adder/adder_tree_17.v \
-                            /home/MS_115/acc01/remote/band_pass_filter/02_hdl/00_rtl/hpf_rtl.v \
-                            /home/MS_115/acc01/remote/band_pass_filter/02_hdl/00_rtl/lpf_rtl.v \
-                            /home/MS_115/acc01/remote/band_pass_filter/02_hdl/00_rtl/top_rtl.v}
+read_file -format verilog {../../00_rtl/adder/adder_tree_15.v \
+                            ../../00_rtl/adder/adder_tree_17.v \
+                            ../../00_rtl/hpf_rtl.v \
+                            ../../00_rtl/lpf_rtl.v \
+                            ../../00_rtl/top_rtl.v}
 current_design top_rtl
 set_operating_conditions -min_library fast -min fast  -max_library slow -max slow
 set_wire_load_model -name tsmc18_wl10 -library slow
