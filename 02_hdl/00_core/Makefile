@@ -79,3 +79,5 @@ post_wave:                           ## open post-sim waveform
 
 tmp:
 	cd 04_sim/02_post_sim && vcs -full64 -f ../../02_filelist/gate.f -o simv -l compile.log
+	vcs -R -f ../../02_filelist/gate.f -sverilog
+
