@@ -11,6 +11,9 @@ FL_RTL       := $(FL_DIR)/rtl.f
 FL_TB        := $(FL_DIR)/tb.f
 FL_GATE      := $(FL_DIR)/gate.f
 
+set_up:
+	cp ../../assets/input_data.txt 04_sim/00_pre_sim/
+
 # =============================================================================
 # #  PRE-SIM  (RTL simulation)
 # # =============================================================================
@@ -51,10 +54,6 @@ syn_check:                           ## quick lint before synthesis
 	cd $(SYN_DIR) && hal -f ../../$(FL_RTL) | tee lint.log
 
 
-
-
-
-
 # =============================================================================
 #  POST-SIM  (gate-level simulation with SDF back-annotation)
 # =============================================================================
@@ -67,8 +66,8 @@ post_compile:                        ## VCS compile (netlist + SDF)
 	cd $(POST_DIR) && vcs -full64 -sverilog  -f ../../02_filelist/gate.f \
 		-P $(VERDI_HOME)/share/PLI/VCS/LINUX64/novas.tab \
 		$(VERDI_HOME)/share/PLI/VCS/LINUX64/pli.a
-	@echo "[post] compile and sim done"
-	#@echo "[post] compile done"
+	#@echo "[post] compile and sim done"
+	@echo "[post] compile done"
  
 post_run:                            ## run gate-level simulation
 	cd $(POST_DIR) && ./simv -l sim.log
@@ -78,6 +77,8 @@ post_wave:                           ## open post-sim waveform
 	cd $(POST_DIR) && nWave $$(ls *.fsdb | head -1) &
 
 tmp:
-	cd 04_sim/02_post_sim && vcs -full64 -f ../../02_filelist/gate.f -o simv -l compile.log
-	vcs -R -f ../../02_filelist/gate.f -sverilog
+	mkdir -p $(POST_DIR)
+	#cd 04_sim/02_post_sim && vcs -full64 -f ../../02_filelist/gate.f -o simv -l compile.log
+	cd $(POST_DIR) && vcs -R -f ../../02_filelist/gate.f -sverilog 
+
 
